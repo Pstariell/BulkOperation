@@ -171,8 +171,9 @@ namespace Bulk
             }
             return conn;
         }
+        #endregion
 
-
+        #region BulkUpdate
         public static DbContext BulkUpdate<TSource, TResult>(this DbContext context, IEnumerable<TSource> list, string TableName, Expression<Func<TSource, TResult>> fieldToUpdate)
         {
             using (SqlConnection conn = new SqlConnection(context.Database.Connection.ConnectionString))
@@ -197,9 +198,6 @@ namespace Bulk
             list.BulkUpdate(TableName, conn, trans, fieldToUpdate);
             return conn;
         }
-
-        #endregion
-
         public static IEnumerable<TSource> BulkUpdate<TSource, TResult>(this IEnumerable<TSource> list, string TableName, SqlConnection conn, SqlTransaction trans, Expression<Func<TSource, TResult>> fieldsToUpdate)// where TSource : class, new() 
         {
             string intTable = $"#{DateTime.Now.ToString("yyyyMMddHHmmssfff")}";
@@ -238,7 +236,15 @@ namespace Bulk
             }
             return list;
         }
+        #endregion
 
+        #region BulkInsert
+        public static SqlConnection BulkInsert<T>(this SqlConnection conn, IEnumerable<T> getDatareader, string tableName,
+          SqlTransaction trans = null, bool createTableIfNotExist = false, bool dropTableIfExist = false)
+        {
+            BulkInsert(conn, getDatareader, tableName, trans, createTableIfNotExist, dropTableIfExist);
+            return conn;
+        }
         public static void BulkInsert<T>(this IEnumerable<T> getDatareader, string tableName, SqlConnection conn,
           SqlTransaction trans = null, bool createTableIfNotExist = false, bool dropTableIfExist = false)
         {
@@ -267,6 +273,7 @@ namespace Bulk
                 }
             }
         }
+        #endregion
 
         #region "Utils" 
         private static List<Tuple<PropertyInfo, string, string, bool>> GetProperties<TSource>()
